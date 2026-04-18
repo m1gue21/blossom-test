@@ -316,40 +316,55 @@ Full operation examples and bodies for Swagger are documented in code under `bac
 
 ## ERD diagram
 
+PostgreSQL schema (Sequelize migrations in `backend/src/database/migrations/`). Rendered below via **Mermaid** (supported on GitHub).
+
+```mermaid
+erDiagram
+    characters {
+        int id PK
+        int external_id UK
+        string name
+        string status
+        string species
+        string type
+        string gender
+        string origin_name
+        string location_name
+        string image
+        string episode "varchar[]"
+        string url
+        boolean is_deleted
+        datetime created_at
+        datetime updated_at
+    }
+
+    comments {
+        int id PK
+        int character_id FK
+        string author
+        string content
+        datetime created_at
+        datetime updated_at
+    }
+
+    favorites {
+        int id PK
+        int character_id FK
+        string user_id
+        datetime created_at
+        datetime updated_at
+    }
+
+    characters ||--o{ comments : has
+    characters ||--o{ favorites : has
 ```
-┌─────────────────────────────────────┐
-│             characters              │
-├──────────────┬──────────────────────┤
-│ id           │ SERIAL PK            │
-│ external_id  │ INT UNIQUE NOT NULL  │
-│ name         │ VARCHAR NOT NULL     │
-│ status       │ VARCHAR(50)          │
-│ species      │ VARCHAR(100)         │
-│ type         │ VARCHAR(100)         │
-│ gender       │ VARCHAR(50)          │
-│ origin_name  │ VARCHAR              │
-│ location_name│ VARCHAR              │
-│ image        │ VARCHAR              │
-│ episode      │ VARCHAR[]            │
-│ url          │ VARCHAR              │
-│ is_deleted   │ BOOLEAN DEFAULT false│
-│ created_at   │ TIMESTAMP            │
-│ updated_at   │ TIMESTAMP            │
-└──────────────┴──────────────────────┘
-         │                   │
-         │ 1:N               │ 1:N
-         ▼                   ▼
-┌──────────────────┐  ┌──────────────────┐
-│     comments     │  │    favorites     │
-├────────┬─────────┤  ├────────┬─────────┤
-│ id     │ SERIAL  │  │ id     │ SERIAL  │
-│ char_id│ INT FK  │  │ char_id│ INT FK  │
-│ author │ VARCHAR │  │ user_id│ VARCHAR │
-│ content│ TEXT    │  │created │ TIMESTAMP│
-│created │ TIMESTAMP│  └────────┴─────────┘
-│updated │ TIMESTAMP│   UNIQUE(char_id, user_id)
-└────────┴─────────┘
-```
+
+| From | To | Cardinality | Foreign key | Notes |
+|------|-----|---------------|-------------|--------|
+| `characters` | `comments` | 1 : N | `comments.character_id` → `characters.id` | `ON DELETE CASCADE` |
+| `characters` | `favorites` | 1 : N | `favorites.character_id` → `characters.id` | `ON DELETE CASCADE`; **unique** `(character_id, user_id)` |
+
+`favorites.user_id` is an app-level user string (no `users` table). **DBML** for [dbdiagram.io](https://dbdiagram.io) and an ASCII overview: [docs/database-erd.md](docs/database-erd.md).
 
 ---
 
