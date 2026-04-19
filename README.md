@@ -24,7 +24,6 @@ A full-stack application to search, filter, favorite, and comment on characters 
 12. [Testing](#running-tests)
 13. [Design patterns](#design-patterns-used)
 14. [Troubleshooting](#troubleshooting)
-15. [Push to GitHub](#push-to-github)
 
 ---
 
@@ -436,29 +435,6 @@ cd frontend && npm test
 | Empty list in UI | Run migrations and seed ([Database](#database-migrations--seed)) |
 | GraphQL network error in browser | Ensure backend is up and Nginx/Vite proxy `/graphql` is reachable |
 | `db:seed` inside container fails | Use `npx ts-node src/database/seeds/seedCharacters.ts` as shown, or seed from host with `backend/.env` |
-
----
-
-## Push to GitHub
-
-If this folder is not yet a Git repository:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit: Rick & Morty full stack app"
-git branch -M main
-git remote add origin https://github.com/m1gue21/blossom-test.git
-git push -u origin main
-```
-
-If the remote already exists and you only need to push updates:
-
-```bash
-git add .
-git commit -m "Describe your changes"
-git push origin main
-```
 
 ---
 
