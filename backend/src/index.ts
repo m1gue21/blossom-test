@@ -1,9 +1,12 @@
+import { execSync } from 'child_process';
 import express from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 import sequelize from './config/database';
+import { Character } from './models';
+import { fetchAndSeedCharacters } from './database/seeds/seedCharacters';
 import CacheService from './services/CacheService';
 import { typeDefs } from './graphql/schema/typeDefs';
 import { resolvers } from './graphql/resolvers';
@@ -63,7 +66,23 @@ async function bootstrap(): Promise<void> {
   await sequelize.authenticate();
   console.log('✅ PostgreSQL connected');
 
+  try {
+    execSync('npx sequelize-cli db:migrate', {
+      stdio: 'inherit',
+      env: process.env,
+    });
+  } catch {
+    throw new Error('Database migrations failed');
+  }
+
   await CacheService.connect();
+
+  const characterCount = await Character.count();
+  if (characterCount === 0) {
+    console.log('📦 Database empty; seeding 15 base characters from Rick and Morty API...');
+    await fetchAndSeedCharacters();
+    await CacheService.invalidatePattern('characters:*');
+  }
 
   startUpdateCronJob();
 

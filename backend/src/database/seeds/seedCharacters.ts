@@ -60,4 +60,7 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+// Solo al ejecutar `npm run db:seed` / `node dist/database/seeds/seedCharacters.js`, no al importar desde index
+if (require.main === module) {
+  main();
+}
