@@ -26,6 +26,7 @@ export function CharactersPage() {
   const userId    = useUser();
 
   const [filters,    setFilters]    = useState<CharacterFilters>(DEFAULT_FILTERS);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showFilter, setShowFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +39,21 @@ export function CharactersPage() {
     () => ({ ...buildBaseQueryVars(filters), userId }),
     [filters]
   );
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const normalizedSearch = searchTerm.trim();
+      const nextName = normalizedSearch || undefined;
+      if ((filters.name ?? undefined) === nextName) return;
+      setFilters((prev) => ({ ...prev, name: nextName, page: 1 }));
+    }, 650);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm, filters.name]);
+
+  useEffect(() => {
+    setSearchTerm(filters.name ?? '');
+  }, [filters.name]);
 
   const { data: dataStarred, loading: loadingStarred } = useQuery<{ characters: PaginatedCharacters }>(
     GET_CHARACTERS,
@@ -178,8 +194,8 @@ export function CharactersPage() {
             <input
               type="text"
               placeholder="Search or filter results"
-              value={filters.name || ''}
-              onChange={(e) => setFilters((p) => ({ ...p, name: e.target.value || undefined, page: 1 }))}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="min-w-0 flex-1 bg-transparent text-sm text-text-primary placeholder-text-label outline-none"
               data-testid="search-input"
             />

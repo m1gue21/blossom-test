@@ -101,9 +101,11 @@ class CharacterService {
       order,
       limit,
       offset,
+      distinct: true,
+      col: 'Character.id',
       include: [
-        { model: Comment, as: 'comments' },
-        { model: Favorite, as: 'favorites' },
+        { model: Comment, as: 'comments', separate: true },
+        { model: Favorite, as: 'favorites', separate: true },
       ],
     });
 

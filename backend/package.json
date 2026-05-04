@@ -4,12 +4,14 @@
   "description": "Backend API for Rick & Morty Explorer (GraphQL + REST health)",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node-dev --prefer-ts-exts --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo:all",
-    "db:seed": "ts-node src/database/seeds/seedCharacters.ts",
+    "db:seed": "TS_NODE_PREFER_TS_EXTS=true ts-node src/database/seeds/seedCharacters.ts",
+    "job:sync-characters": "TS_NODE_PREFER_TS_EXTS=true ts-node src/scripts/runCharacterSync.ts",
+    "job:sync-characters:prod": "node dist/scripts/runCharacterSync.js",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch"
   },
